@@ -2,16 +2,15 @@ package com.application.org.Netflix.Application.ui.controller;
 
 import com.application.org.Netflix.Application.ui.model.request.UserRequest;
 import com.application.org.Netflix.Application.ui.model.response.UserResponse;
-import org.springframework.context.ApplicationContext;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 
 import javax.validation.Valid;
-import java.awt.*;
+
 
 @RestController
 @RequestMapping("/users")// http://localhost:8080/users
