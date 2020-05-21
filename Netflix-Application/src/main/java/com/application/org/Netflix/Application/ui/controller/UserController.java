@@ -1,15 +1,21 @@
 package com.application.org.Netflix.Application.ui.controller;
 
+import com.application.org.Netflix.Application.servicepackages.Repository.UserRepository;
+import com.application.org.Netflix.Application.servicepackages.serivceclasses.service.UserService;
+import com.application.org.Netflix.Application.ui.model.dto.UserDto;
 import com.application.org.Netflix.Application.ui.model.request.UserRequest;
 import com.application.org.Netflix.Application.ui.model.response.UserResponse;
 
+import org.apache.catalina.User;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
-import javax.validation.Valid;
+
 
 
 @RestController
@@ -17,14 +23,17 @@ import javax.validation.Valid;
 public class UserController {
 
 
+    @Autowired
+    UserService userService;
+
     @GetMapping(path="/getUser/{userId}", produces = {MediaType.APPLICATION_JSON_VALUE,MediaType.APPLICATION_XML_VALUE})
     public ResponseEntity<UserResponse> getUser(@PathVariable("userId") String userId){
 
         UserResponse userResponse = new UserResponse();
-        userResponse.setFirstName("saikrishna");
-        userResponse.setLastName("pidikiti");
-        userResponse.setEmail("saikrishnapvn@gmail.com");
-        userResponse.setUserId(userId);
+        ModelMapper modelMapper = new ModelMapper();
+
+        UserDto userDto=userService.getUserById(userId);
+        userResponse=modelMapper.map(userDto,UserResponse.class);
 
         return new ResponseEntity<UserResponse>(userResponse, HttpStatus.OK);
     }
@@ -39,25 +48,34 @@ public class UserController {
 
     @PostMapping(path="/createUser",consumes = {MediaType.APPLICATION_XML_VALUE,MediaType.APPLICATION_JSON_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE,MediaType.APPLICATION_XML_VALUE})
-    public ResponseEntity<UserResponse> createUser(@Valid @RequestBody UserRequest userRequest){
+    public ResponseEntity<UserResponse> createUser(@RequestBody UserRequest userRequest){
+        ModelMapper modelMapper = new ModelMapper();
         UserResponse userResponse = new UserResponse();
-        userResponse.setFirstName(userRequest.getFirstName());
-        userResponse.setLastName(userRequest.getLastName());
-        userResponse.setEmail(userRequest.getEmail());
+        UserDto userDto = modelMapper.map(userRequest,UserDto.class);
 
+        UserDto returnValue=userService.createUser(userDto);
+        userResponse=modelMapper.map(returnValue,UserResponse.class);
 
         return new ResponseEntity<UserResponse>(userResponse, HttpStatus.ACCEPTED);
     }
 
-    @PutMapping(path = "/updateUser",consumes = {MediaType.APPLICATION_XML_VALUE,MediaType.APPLICATION_JSON_VALUE},
+    @PutMapping(path = "/updateUser/{userId}",consumes = {MediaType.APPLICATION_XML_VALUE,MediaType.APPLICATION_JSON_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE,MediaType.APPLICATION_XML_VALUE})
-    public String updateUser(){
-        return "User Updated";
+    public ResponseEntity<UserResponse>  updateUser(@PathVariable("userId") String userId, @RequestBody UserRequest userRequest){
+        UserResponse userResponse = new UserResponse();
+        ModelMapper modelMapper = new ModelMapper();
+
+        UserDto userDto = modelMapper.map(userRequest,UserDto.class);
+        UserDto recievedData=userService.updateUser(userDto,userId);
+        userResponse=modelMapper.map(recievedData,UserResponse.class);
+        return new ResponseEntity<UserResponse>(userResponse,HttpStatus.ACCEPTED);
     }
 
-    @DeleteMapping(path="/deleteUser",consumes = {MediaType.APPLICATION_XML_VALUE,MediaType.APPLICATION_JSON_VALUE},
+    @DeleteMapping(path="/deleteUser/{userId}",consumes = {MediaType.APPLICATION_XML_VALUE,MediaType.APPLICATION_JSON_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE,MediaType.APPLICATION_XML_VALUE})
-    public String deleteUser(){
-        return "User Deleted";
+    public String deleteUser(@PathVariable("userId") String userId){
+        String deleted=userService.deleteUser(userId);
+        return deleted;
+
     }
 }

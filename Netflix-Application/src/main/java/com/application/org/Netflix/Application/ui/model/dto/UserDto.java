@@ -1,15 +1,32 @@
-package com.application.org.Netflix.Application.ui.model.request;
+package com.application.org.Netflix.Application.ui.model.dto;
 
+import java.io.Serializable;
 
+public class UserDto implements Serializable {
 
-
-public class UserRequest {
-
-
+    private static final long serialVersionUID = 891235631466810360L;
+    private long id;
+    private String userId;
     private String firstName;
     private String lastName;
     private String email;
     private String password;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 
     public String getFirstName() {
         return firstName;
